@@ -1,12 +1,8 @@
 ﻿using IaPluginPoc.Agents;
+using IaPluginPoc.Config;
 using Microsoft.SemanticKernel;
 
-var builder = Kernel.CreateBuilder().AddOpenAIChatCompletion("gpt-4.1",
-    new Uri("https://api.openai.com/v1"),
-    "",
-    serviceId: "code");
-
-Kernel kernel = builder.Build();
+var kernel = Kernel.CreateBuilder().AddSk();
 
 string? userInput;
 var quoteAgent = new QuoteAgent(kernel);

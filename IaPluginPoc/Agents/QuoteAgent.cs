@@ -47,10 +47,9 @@ public class QuoteAgent
                Lors de la création d'un devis tu devras scrupuleusement respecter le flux suivant :
                   
                   1. Créer un devis vide.
-                  
                   2. Demander quel client l'utilisateur souhaite lier à ce devis | il y'a deux possibilités (personne ou organisation)
                   l'utilisateur peux choisir parmis ceux existant ou en créer. Tu demanderas donc si c'est un client de type personne ou organisation
-                  
+                  ATTENTION !!!! CETTE ETAPE EST OBLIGATOIRE AVANT DE PASSER A LA SUITE
                   3. Demander une confirmation à l'utilisateur si il souhaite bien liéer le customer choisis précédemment au devis.
                   4. Lier le customer au devis
                   5. Demander si il souhaite ajouter un contact

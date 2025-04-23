@@ -4,9 +4,9 @@ namespace IaPluginPoc.Plugins.Context;
 
 public class PluginsContext
 {
-    public static List<Contact> Contacts =
+    public static readonly List<Contact> Contacts =
     [
-        new Contact
+        new()
         {
             Id = Guid.NewGuid(),
             Firstname = "Marc",
@@ -14,7 +14,7 @@ public class PluginsContext
         }
     ];
 
-    public static List<Quote> Quotes = [];
-    public static List<PersonCustomer> PersonCustomers = [];
-    public static List<OrganizationCustomer>  OrganizationCustomers = [];
+    public static readonly List<Quote> Quotes = [];
+    public static readonly List<PersonCustomer> PersonCustomers = [];
+    public static readonly List<OrganizationCustomer>  OrganizationCustomers = [];
 }
