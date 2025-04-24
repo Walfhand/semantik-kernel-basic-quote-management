@@ -55,4 +55,12 @@ public class Quote
         QuoteItems.Add(quoteItem);
         TotalPrice += quoteItem.Price;
     }
+
+    public QuoteItem UpdateQuoteItem(Guid quoteItemId, Guid productId, string category, int quantity, int unitPrice)
+    {
+        var quoteItem = QuoteItems.Single(qi => qi.Id == quoteItemId);
+        quoteItem.Update(productId, category, quantity, unitPrice);
+        TotalPrice = QuoteItems.Sum(qi => qi.Price);
+        return quoteItem;
+    }
 }

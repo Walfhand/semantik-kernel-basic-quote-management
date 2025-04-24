@@ -28,4 +28,18 @@ public class QuotesPlugins
         quote.AddQuoteItem(quoteItem);
         return quoteItem;
     }
+
+    [KernelFunction("update_quote_item_to_quote")]
+    [Description("update a quote item to quote")]
+    public QuoteItem UpdateQuoteItem([Description("id of quote")] Guid quoteId,
+        [Description("id of quote item")] Guid quoteItemId,
+        [Description("The selected product")] Guid productId,
+        [Description("Category of quote item. exemple : (bathroom)")]
+        string category,
+        [Description("Quantity of a product")] int quantity)
+    {
+        var product = PluginsContext.Products.Single(p => p.Id == productId);
+        var quote = PluginsContext.Quotes.Single(quote => quote.Id == quoteId);
+        return quote.UpdateQuoteItem(quoteItemId, productId, category, quantity, product.Price);
+    }
 }

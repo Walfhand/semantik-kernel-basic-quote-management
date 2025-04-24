@@ -22,4 +22,13 @@ public class ProductsPlugins
         PluginsContext.Products.Add(product);
         return product;
     }
+
+    [KernelFunction("update_product")]
+    [Description("Update an existing product")]
+    public Product UpdateProduct(Guid productId, string name, string description, int price, ProductQuantityUnit unit)
+    {
+        var product = PluginsContext.Products.Single(p => p.Id == productId);
+        product.Update(name, description, price, unit);
+        return product;
+    }
 }

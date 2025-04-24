@@ -20,6 +20,14 @@ public class Product
     {
         return new Product(name, description, price, unit);
     }
+
+    public void Update(string name, string description, int price, ProductQuantityUnit unit)
+    {
+        Name = name;
+        Description = description;
+        Price = price;
+        Unit = unit;
+    }
 }
 
 public enum ProductQuantityUnit
