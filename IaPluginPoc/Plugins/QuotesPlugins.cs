@@ -4,55 +4,28 @@ using IaPluginPoc.Plugins.Context;
 using Microsoft.SemanticKernel;
 
 namespace IaPluginPoc.Plugins;
+
 public class QuotesPlugins
 {
-    [KernelFunction("create_empty_quote")]
-    [Description("Create a new empty quote")]
-    public Quote CreateEmptyQuote()
+    [KernelFunction("get_specific_quote")]
+    [Description("Get specific quote")]
+    public Quote GetQuote()
     {
-        var emptyQuote = new Quote();
-        PluginsContext.Quotes.Add(emptyQuote);
-        return emptyQuote;
+        return PluginsContext.Quotes.Single();
     }
-    
 
-    [KernelFunction("link_contact_to_quote")]
-    [Description("Link an existing contact to the quote")]
-    public void LinkContactToQuote([Description("Id of quote")] Guid quoteId, [Description("Id of contact")] Guid contactId)
+    [KernelFunction("add_quote_item_to_quote")]
+    [Description("Add new quote item to quote")]
+    public QuoteItem AddQuoteItem([Description("id of quote")] Guid quoteId,
+        [Description("The selected product")] Guid productId,
+        [Description("Category of quote item. exemple : (bathroom)")]
+        string category,
+        [Description("Quantity of a product")] int quantity)
     {
-        var contact = PluginsContext.Contacts.SingleOrDefault(contact => contact.Id == contactId);
-        if (contact is null)
-            throw new Exception();
-        var quote =  PluginsContext.Quotes.SingleOrDefault(quote => quote.Id == quoteId);
-        if (quote is null)
-            throw new Exception();
-        quote.LinkContact(contact);
-    }
-    
-    [KernelFunction("link_person_customer_to_quote")]
-    [Description("Link an existing person customer to the quote")]
-    public void LinkPersonCustomerToQuote([Description("Id of quote")] Guid quoteId, [Description("Id of person customer")] Guid personCustomerId)
-    {
-        var personCustomer = PluginsContext.PersonCustomers.SingleOrDefault(personCustomer => personCustomer.Id == personCustomerId);
-        if (personCustomer is null)
-            throw new Exception();
-        var quote =  PluginsContext.Quotes.SingleOrDefault(quote => quote.Id == quoteId);
-        if (quote is null)
-            throw new Exception();
-        quote.LinkPersonCustomer(personCustomer);
-    }
-    
-    [KernelFunction("link_organization_customer_to_quote")]
-    [Description("Link an existing person customer to the quote")]
-    public void LinkOrganizationCustomerToQuote([Description("Id of quote")] Guid quoteId, 
-        [Description("Id of organization customer")] Guid organizationCustomerId)
-    {
-        var organizationCustomer = PluginsContext.OrganizationCustomers.SingleOrDefault(organizationCustomer => organizationCustomer.Id == organizationCustomerId);
-        if (organizationCustomer is null)
-            throw new Exception();
-        var quote =  PluginsContext.Quotes.SingleOrDefault(quote => quote.Id == quoteId);
-        if (quote is null)
-            throw new Exception();
-        quote.LinkOrganizationCustomer(organizationCustomer);
+        var product = PluginsContext.Products.Single(p => p.Id == productId);
+        var quote = PluginsContext.Quotes.Single(quote => quote.Id == quoteId);
+        var quoteItem = QuoteItem.Create(product.Id, category, quantity, product.Price);
+        quote.AddQuoteItem(quoteItem);
+        return quoteItem;
     }
 }

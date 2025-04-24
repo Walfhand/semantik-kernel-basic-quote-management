@@ -6,9 +6,9 @@ namespace IaPluginPoc.Agents;
 
 public class QuoteAgent
 {
+    private readonly IChatCompletionService _chatCompletionService;
     private readonly ChatHistory _history;
     private readonly Kernel _kernel;
-    private readonly IChatCompletionService _chatCompletionService;
 
     public QuoteAgent(Kernel kernel)
     {
@@ -23,49 +23,54 @@ public class QuoteAgent
     {
         _history.AddUserMessage(question);
         Console.Write("Assistant > ");
-        string result = "";
+        var result = "";
         await foreach (var messageContent in _chatCompletionService.GetStreamingChatMessageContentsAsync(
                            _history,
-                           executionSettings: new PromptExecutionSettings
+                           new PromptExecutionSettings
                            {
                                FunctionChoiceBehavior = FunctionChoiceBehavior.Auto()
                            },
-                           kernel: _kernel))
+                           _kernel))
         {
             Console.Write(messageContent.Content);
             result += messageContent.Content;
         }
+
         _history.AddAssistantMessage(result);
     }
+
     private static string SystemPrompt()
     {
         return """
-               Context : tu es un assitant intégré au seins d'une application de création de devis qui se nomme "CODE-C"
+               🛠️ Context
+               You are an assistant integrated into a construction/renovation quotation application.
 
-               ROLE: Ton role est de créer des devis lorsque l'on te le demande grâce aux outils que tu as à ta disposition
+               🎯 Role
+               Your role is to generate quotation line items based on a problem description.
+               Example: "Client X wants to renovate their bathroom. They need a specific faucet, a certain type of tile for X square meters, etc."
 
-               Lors de la création d'un devis tu devras scrupuleusement respecter le flux suivant :
-                  
-                  1. Créer un devis vide.
-                  2. Demander quel client l'utilisateur souhaite lier à ce devis | il y'a deux possibilités (personne ou organisation)
-                  l'utilisateur peux choisir parmis ceux existant ou en créer. Tu demanderas donc si c'est un client de type personne ou organisation
-                  ATTENTION !!!! CETTE ETAPE EST OBLIGATOIRE AVANT DE PASSER A LA SUITE
-                  3. Demander une confirmation à l'utilisateur si il souhaite bien liéer le customer choisis précédemment au devis.
-                  4. Lier le customer au devis
-                  5. Demander si il souhaite ajouter un contact
-                  6. Si oui alors demander si il souhaite ajouter un contact existant ou en créer un.
-                  7. Demander une confirmation pour lier le contact au devis.
-                  8. Si confirmé alors lier le devis
-                  
-                  
-                  Après chaque étape je veux que tu confirmes que l'action s'est bien déroulée.
+               🔍 What you do
+
+               Analyze the problem description.
+
+               Extract the required products and, when possible, their quantities.
+
+               If matching products exist in the database, suggest them to the client for confirmation.
+
+               If no matching product is found, create a new item based on the description.
+
+               When creating new products, add them directly as quote items in the quotation.
+
+               Optionally, provide a short summary listing the created items and mention that they were not found in the product database. This summary is not required every time — only when it adds value.
+
+               ✍️ Style
+               Your answers must be brief and focused, providing only the essential information.
                """;
     }
 
     private void AddPlugins()
     {
+        _kernel.Plugins.AddFromType<ProductsPlugins>("Products");
         _kernel.Plugins.AddFromType<QuotesPlugins>("Quotes");
-        _kernel.Plugins.AddFromType<CustomersPlugin>("Customers");
-        _kernel.Plugins.AddFromType<ContactsPlugin>("Contacts");
     }
 }
